@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Systems — Executive Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #d4af37;
+            --gold-light: #f4e4b7;
+            --platinum: #e5e4e2;
+            --dark: #0d0d0d;
+            --dark-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8b8;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Luxury gradient background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(229, 228, 226, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Animated particles */
+        .particle {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0;
+            animation: float 15s infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                opacity: 0;
+                transform: translateY(0) translateX(0);
+            }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.3; }
+            100% { 
+                transform: translateY(-100vh) translateX(50px);
+            }
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 30%; animation-delay: 3s; }
+        .particle:nth-child(3) { left: 50%; animation-delay: 6s; }
+        .particle:nth-child(4) { left: 70%; animation-delay: 9s; }
+        .particle:nth-child(5) { left: 90%; animation-delay: 12s; }
+        .particle:nth-child(6) { left: 20%; animation-delay: 2s; }
+        .particle:nth-child(7) { left: 60%; animation-delay: 8s; }
+        .particle:nth-child(8) { left: 80%; animation-delay: 5s; }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 5rem 3rem;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem; /* БЫЛО: 6rem - уменьшил отступ снизу */
+            animation: fadeInDown 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            display: inline-block;
+            margin-bottom: 1.5rem; /* БЫЛО: 2.5rem - уменьшил отступ */
+            font-size: 0.75rem;
+            letter-spacing: 5px;
+            color: var(--gold);
+            font-weight: 400;
+            text-transform: uppercase;
+            padding: 0.75rem 3rem;
+            border: 1px solid var(--gold);
+            position: relative;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), transparent);
+            box-shadow: 
+                0 0 20px rgba(212, 175, 55, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .logo::before,
+        .logo::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold));
+        }
+
+        .logo::before {
+            left: -50px;
+            top: 50%;
+        }
+
+        .logo::after {
+            right: -50px;
+            top: 50%;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+
+        .main-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 300;
+            color: var(--text-primary);
+            margin-bottom: 1rem; /* БЫЛО: 1.5rem - уменьшил отступ */
+            letter-spacing: 2px;
+            line-height: 1.2;
+            text-shadow: 0 2px 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .main-title span {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--platinum) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3));
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* Divider */
+        .divider {
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 1.5rem auto; /* БЫЛО: 3rem auto - уменьшил отступ сверху и снизу */
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+            animation: dividerGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes dividerGlow {
+            0%, 100% { 
+                box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+            }
+            50% { 
+                box-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+            }
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 3rem;
+            animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Premium Cards */
+        .premium-card {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(20, 20, 20, 0.9));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Decorative corner borders */
+        .premium-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 60px;
+            height: 60px;
+            border-top: 2px solid var(--gold);
+            border-left: 2px solid var(--gold);
+            opacity: 0.5;
+            transition: all 0.5s ease;
+        }
+
+        .premium-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            border-bottom: 2px solid var(--gold);
+            border-right: 2px solid var(--gold);
+            opacity: 0.5;
+            transition: all 0.5s ease;
+        }
+
+        .premium-card:hover::before,
+        .premium-card:hover::after {
+            width: 100px;
+            height: 100px;
+            opacity: 1;
+        }
+
+        /* Shimmer effect */
+        .shimmer {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            transition: left 0.7s ease;
+            pointer-events: none;
+        }
+
+        .premium-card:hover .shimmer {
+            left: 100%;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 
+                0 25px 70px rgba(0, 0, 0, 0.6),
+                0 0 60px rgba(212, 175, 55, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .card-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 5.5rem;
+            font-weight: 300;
+            color: var(--gold);
+            opacity: 0.2;
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            line-height: 1;
+            z-index: 0;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+            transition: all 0.5s ease;
+        }
+
+        .premium-card:hover .card-number {
+            opacity: 0.35;
+            text-shadow: 0 0 50px rgba(212, 175, 55, 0.6);
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(229, 228, 226, 0.08));
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            position: relative;
+            box-shadow: 
+                0 4px 20px rgba(212, 175, 55, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .card-icon::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, var(--gold), transparent, var(--gold));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+        }
+
+        .premium-card:hover .card-icon::before {
+            opacity: 0.3;
+        }
+
+        .premium-card:hover .card-icon {
+            box-shadow: 
+                0 8px 30px rgba(212, 175, 55, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .premium-card h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .premium-card h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            padding: 2rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.03), transparent);
+        }
+
+        .metric {
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), transparent);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .metric:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.15);
+        }
+
+        .metric-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.8rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--gold), var(--platinum));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+
+        .luxury-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.1rem 2.8rem;
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 4px 15px rgba(212, 175, 55, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .luxury-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+
+        .luxury-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+            border-radius: 50%;
+        }
+
+        .luxury-btn:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .luxury-btn:hover::before {
+            left: 0;
+        }
+
+        .luxury-btn:hover {
+            color: var(--dark);
+            border-color: var(--gold-light);
+            box-shadow: 
+                0 8px 30px rgba(212, 175, 55, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .arrow {
+            transition: transform 0.4s ease;
+        }
+
+        .luxury-btn:hover .arrow {
+            transform: translateX(5px);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 3rem 1.5rem;
+            }
+
+            .main-title {
+                font-size: 2.5rem;
+            }
+
+            .premium-card {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">Artificial Intelligence</div>
+            <h1 class="main-title">
+                Системы <span>Reinforcement Learning</span>
+            </h1>
+            <div class="divider"></div>
+            <p class="subtitle">Эксклюзивные решения для максимизации бизнес-показателей</p>
+        </header>
+
+        <main class="grid">
+            <article class="premium-card">
+                <div class="shimmer"></div>
+                <div class="card-number">01</div>
+                <div class="card-content">
+                    <div class="card-icon">💎</div>
+                    <h2>Интеллектуальный инвентарь</h2>
+                    <p class="card-description">
+                        Deep Q-Network для управления запасами сети из 70 магазинов. Предиктивная аналитика спроса с автоматической корректировкой заказов и минимизацией складских издержек.
+                    </p>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-value">-32%</div>
+                            <div class="metric-label">Издержки</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">+18%</div>
+                            <div class="metric-label">Оборот</div>
+                        </div>
+                    </div>
+                    <a href="#" class="luxury-btn">
+                        Детали <span class="arrow">→</span>
+                    </a>
+                </div>
+            </article>
+
+            <article class="premium-card">
+                <div class="shimmer"></div>
+                <div class="card-number">02</div>
+                <div class="card-content">
+                    <div class="card-icon">📊</div>
+                    <h2>Динамическое ценообразование</h2>
+                    <p class="card-description">
+                        PPO-алгоритмы для адаптивной ценовой политики. Учет эластичности спроса, конкурентной среды и маржинальности в режиме реального времени для максимизации прибыли.
+                    </p>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-value">+24%</div>
+                            <div class="metric-label">Выручка</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">+15%</div>
+                            <div class="metric-label">Маржа</div>
+                        </div>
+                    </div>
+                    <a href="#" class="luxury-btn">
+                        Детали <span class="arrow">→</span>
+                    </a>
+                </div>
+            </article>
+
+            <article class="premium-card">
+                <div class="shimmer"></div>
+                <div class="card-number">03</div>
+                <div class="card-content">
+                    <div class="card-icon">🌐</div>
+                    <h2>Multi-Agent координация</h2>
+                    <p class="card-description">
+                        Распределенная архитектура A3C для синхронизации мультифилиальной сети. Оптимизация ассортиментной матрицы, межфилиальных трансферов и локализации под региональный спрос.
+                    </p>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-value">70+</div>
+                            <div class="metric-label">Филиалов</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">Real-time</div>
+                            <div class="metric-label">Синхронизация</div>
+                        </div>
+                    </div>
+                    <a href="#" class="luxury-btn">
+                        Детали <span class="arrow">→</span>
+                    </a>
+                </div>
+            </article>
+        </main>
+    </div>
+</body>
+</html>
